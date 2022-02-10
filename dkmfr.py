@@ -67,8 +67,14 @@ def main(args=None):
     parser.add_argument('--nbits', action='store', dest='nbits',
                         default=3, type=int,
                         help='how many bits in random permutations.')
-    args = parser.parse_args(args)
 
+    ### CODIGO ADICIONADO
+    parser.add_argument('--inv', action='store_true', dest='inv',
+                        default=False, help='inverse of pi (sigma).')
+    ### CODIGO ADICIONADO    
+    
+    args = parser.parse_args(args)
+    
     func_list = [args.samples*[f] if f == 'random' else [f] for f in args.functions]
     func_list = list(itertools.chain(*func_list))
     print(func_list)
@@ -84,17 +90,23 @@ def main(args=None):
         else:
             pi = bm.pi_dict[option]
 
-        # files to print gates for pi
-        if option == 'random':
-            file_name = 'S' + str(args.bi) + '-' + option + '-' + str(random_seq)
-        else:
-            file_name = 'S' + str(args.bi) + '-' + option
-        arc = open(out_path + file_name+'.txt', mode='w')
-        arc_tfc = open(out_path + file_name+'.tfc', mode='w')
-
         size = pi.size                        # size of permutation
         iota = Permutation([], size=pi.size)  # identity permutation
         n = int(log(size, 2))                 # number of bits
+        
+        # files to print gates for pi
+        file_name = 'S' + str(args.bi) + '-' + option
+        if option == 'random':
+            file_name += '-' + str(random_seq)
+        
+        ### CODIGO ADICIONADO
+        if args.inv:
+            pi = Permutation(rev.inv(n, pi))   # inversa da permutação pi -- sigma
+            file_name += "_inv"
+        ### CODIGO ADICIONADO
+        
+        arc = open(out_path + file_name+'.txt', mode='w')
+        arc_tfc = open(out_path + file_name+'.tfc', mode='w')
 
         info = '# permutation: ' + str(option)
         info += '\n# ' + str(pi.array_form)
@@ -116,6 +128,7 @@ def main(args=None):
 
         print('----------------------------------------------')
         print(option)
+        
         print('DH(pi) = ', rev.dh_perm_perm(pi))
 
         # Matrix obtained in pre-processing
@@ -126,7 +139,7 @@ def main(args=None):
 
         # pi = iota + 1
         pi_final = iota
-
+        
         start_time = time.time()         # time for pi in seconds
 
         while pi != pi_final:       # for permutations in sequence
