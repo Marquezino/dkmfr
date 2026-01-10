@@ -1,8 +1,9 @@
 # dkmfr
-Synthesis of reversible circuits.
+Supplementary material to "A reversible circuit synthesis algorithm with progressive increase of controls in generalized Toffoli gates", see full paper in https://lib.jucs.org/article/69617/.
 
 ## Installing required modules:
-`pip install sympy`
+
+`pip install sympy`  
 `pip install argparse` 
 
 or simply use:
